@@ -1,4 +1,8 @@
 ﻿namespace FSBinn
 
-module private DataTypes =
-    let BINN_STRING = (byte) 0xa0
+module private BinnDataTypes =
+    [<Literal>]
+    let string = 0xa0uy
+    
+    [<Literal>]
+    let int32 = 0x61uy

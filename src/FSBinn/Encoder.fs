@@ -3,9 +3,7 @@
 open System
 open System.IO
 
-open DataTypes
-
-module Encoder =
+module private EncoderFunctions =
     let private toVarint (value: int) = 
         if value > 127 then
             BitConverter.GetBytes(value ||| 0x80000000) |> Array.rev
@@ -14,17 +12,21 @@ module Encoder =
 
     let private writeTo (stream: Stream) (bytes: byte[]) = stream.Write(bytes, 0, bytes.Length)
 
-    let private encodeString (value: string) =
+    let encodeString (value: string) =
         let stream = new MemoryStream()    
-        
-        [|BINN_STRING|] |> writeTo stream
-        value |> String.length |> toVarint |> writeTo stream
+    
+        [|BinnDataTypes.string|] |> writeTo stream
+        value.Length |> toVarint |> writeTo stream
         value |> Text.Encoding.UTF8.GetBytes |> writeTo stream
+
+        // Write string termination byte
+        [|0uy|] |> writeTo stream
 
         stream.ToArray()
 
+module Encoder =
     let encode (object: obj): byte[] =
         match object with
-            | :? string as s -> encodeString s
+            | :? string as s -> EncoderFunctions.encodeString s
             | :? int as i -> Array.empty<byte>
             | _ -> Array.empty<byte>
