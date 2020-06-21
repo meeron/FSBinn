@@ -20,10 +20,18 @@ module private EncoderFunctions =
     let ecnodeByte(value: byte): byte[] =
         [|value|] |> Array.append [|BinnDataTypes.uint8|]
 
+    let encodeInt16(value: int16) =
+        value |> BitConverter.GetBytes |> Array.append [|BinnDataTypes.int16|]
+
+    let encodeUInt32(value: uint32) =
+        value |> BitConverter.GetBytes |> Array.append [|BinnDataTypes.uint32|]
+
 module Encoder =
     let encode (object: obj): byte[] =
         match object with
             | :? string as s -> EncoderFunctions.encodeString s
             | :? int as i -> EncoderFunctions.ecnodeInt32 i
             | :? byte as b -> EncoderFunctions.ecnodeByte b
+            | :? int16 as i16 -> EncoderFunctions.encodeInt16(i16)
+            | :? uint32 as ui32 -> EncoderFunctions.encodeUInt32(ui32)
             | _ -> [||]

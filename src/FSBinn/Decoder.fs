@@ -21,19 +21,27 @@ module private DecoderFunctions =
     let decodeInt32 (data: byte[]) =
         BitConverter.ToInt32(data.[0..3], 0)
 
+    let decodeUInt32 (data: byte[]) =
+        BitConverter.ToUInt32(data.[0..3], 0)
+
     let decodeByte (data: byte[]) =
         data.[0]
 
+    let decodeInt16 (data: byte[]) =
+        BitConverter.ToInt16(data.[0..1], 0)
+
 module Decoder =
-    let private toGeneric<'T>(value: obj) =
+    let private toGeneric<'T> (value: obj) =
         value :?> 'T
 
     let decode<'T> (data: byte[]): Option<'T> =
         if data.Length > 0 then
             match data.[0] with
-            | BinnDataTypes.string when typeof<'T> = typeof<string> -> data.[1..] |> DecoderFunctions.decodeString |> toGeneric |> Some
-            | BinnDataTypes.int32 when typeof<'T> = typeof<int> -> data.[1..] |> DecoderFunctions.decodeInt32 |> toGeneric |> Some
-            | BinnDataTypes.uint8 when typeof<'T> = typeof<byte> -> data.[1..] |> DecoderFunctions.decodeByte |> toGeneric |> Some
+            | BinnDataTypes.string -> data.[1..] |> DecoderFunctions.decodeString |> toGeneric |> Some
+            | BinnDataTypes.int32 -> data.[1..] |> DecoderFunctions.decodeInt32 |> toGeneric |> Some
+            | BinnDataTypes.uint8 -> data.[1..] |> DecoderFunctions.decodeByte |> toGeneric |> Some
+            | BinnDataTypes.int16 -> data.[1..] |> DecoderFunctions.decodeInt16 |> toGeneric |> Some
+            | BinnDataTypes.uint32 -> data.[1..] |> DecoderFunctions.decodeUInt32 |> toGeneric |> Some
             | _ -> None
         else
             None

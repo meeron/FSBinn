@@ -25,9 +25,25 @@ let ``Encode int32`` () =
     Assert.Equal(Some value, result)
 
 [<Fact>]
+let ``Encode uint32`` () =
+    let value = uint32 23423484
+
+    let result = value |> encode |> decode<uint32>
+
+    Assert.Equal(Some value, result)
+
+[<Fact>]
 let ``Encode byte`` () =
     let value = byte 123
 
     let result = value |> encode |> decode<byte>
+
+    Assert.Equal(Some value, result)
+
+[<Fact>]
+let ``Encode int16`` () =
+    let value = int16 23455
+
+    let result = value |> encode |> decode<int16>
 
     Assert.Equal(Some value, result)
