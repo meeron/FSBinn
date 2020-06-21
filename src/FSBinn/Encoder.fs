@@ -14,9 +14,16 @@ module private EncoderFunctions =
             |> Array.append (toVarint value.Length)
             |> Array.append [|BinnDataTypes.string|]
 
+    let ecnodeInt32 (value: int): byte[] =
+        BitConverter.GetBytes value |> Array.append [|BinnDataTypes.int32|]
+
+    let ecnodeByte(value: byte): byte[] =
+        [|value|] |> Array.append [|BinnDataTypes.uint8|]
+
 module Encoder =
     let encode (object: obj): byte[] =
         match object with
             | :? string as s -> EncoderFunctions.encodeString s
-            | :? int as i -> Array.empty<byte>
-            | _ -> Array.empty<byte>
+            | :? int as i -> EncoderFunctions.ecnodeInt32 i
+            | :? byte as b -> EncoderFunctions.ecnodeByte b
+            | _ -> [||]

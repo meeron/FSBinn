@@ -6,3 +6,6 @@ module private BinnDataTypes =
     
     [<Literal>]
     let int32 = 0x61uy
+
+    [<Literal>]
+    let uint8 = 0x20uy

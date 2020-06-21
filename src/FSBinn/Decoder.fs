@@ -18,13 +18,22 @@ module private DecoderFunctions =
         // We need to include string termination byte so size - 1
         data.[position..position + size - 1] |> Encoding.UTF8.GetString
 
-module Decoder =
-    type DecodedValue<'T> = Value of 'T | None
+    let decodeInt32 (data: byte[]) =
+        BitConverter.ToInt32(data.[0..3], 0)
 
-    let decode (data: byte[]) =
+    let decodeByte (data: byte[]) =
+        data.[0]
+
+module Decoder =
+    let private toGeneric<'T>(value: obj) =
+        value :?> 'T
+
+    let decode<'T> (data: byte[]): Option<'T> =
         if data.Length > 0 then
             match data.[0] with
-                | BinnDataTypes.string -> Value (DecoderFunctions.decodeString data.[1..])
-                | _ -> None
+            | BinnDataTypes.string when typeof<'T> = typeof<string> -> data.[1..] |> DecoderFunctions.decodeString |> toGeneric |> Some
+            | BinnDataTypes.int32 when typeof<'T> = typeof<int> -> data.[1..] |> DecoderFunctions.decodeInt32 |> toGeneric |> Some
+            | BinnDataTypes.uint8 when typeof<'T> = typeof<byte> -> data.[1..] |> DecoderFunctions.decodeByte |> toGeneric |> Some
+            | _ -> None
         else
             None
