@@ -13,7 +13,6 @@ let ``Encode string`` () =
     let result = value |> encode |> decode
     let resultLong = longValue |> encode |> decode
 
-    //Assert.Equal(Value value, result)
     Assert.Equal(Value value, result)
     Assert.Equal(Value longValue, resultLong)
 

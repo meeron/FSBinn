@@ -1,7 +1,6 @@
 ﻿namespace FSBinn
 
 open System
-open System.IO
 
 module private EncoderFunctions =
     let private toVarint (value: int) = 
@@ -10,19 +9,10 @@ module private EncoderFunctions =
         else
             [|(byte)value|]
 
-    let private writeTo (stream: Stream) (bytes: byte[]) = stream.Write(bytes, 0, bytes.Length)
-
-    let encodeString (value: string) =
-        let stream = new MemoryStream()    
-    
-        [|BinnDataTypes.string|] |> writeTo stream
-        value.Length |> toVarint |> writeTo stream
-        value |> Text.Encoding.UTF8.GetBytes |> writeTo stream
-
-        // Write string termination byte
-        [|0uy|] |> writeTo stream
-
-        stream.ToArray()
+    let encodeString (value: string): byte[] =
+        (Text.Encoding.UTF8.GetBytes value)
+            |> Array.append (toVarint value.Length)
+            |> Array.append [|BinnDataTypes.string|]
 
 module Encoder =
     let encode (object: obj): byte[] =
